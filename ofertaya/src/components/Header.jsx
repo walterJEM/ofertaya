@@ -5,7 +5,7 @@ export default function Header({ cartCount, onCartClick }) {
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
-        OFERTA<span>YA</span>
+        CHAPA<span>LA</span>
       </div>
       <div className={styles.right}>
         <button className={styles.cartBtn} onClick={onCartClick} aria-label="Ver carrito">

@@ -79,11 +79,11 @@ export default function App() {
 
         {/* FOOTER */}
         <footer className={styles.footer}>
-          <p>© 2025 OfertaYa · Lima, Perú</p>
+          <p>© 2025 Chapala.pe · Lima, Perú</p>
           <div className={styles.footerLinks}>
             <a href="https://wa.me/51999999999" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://instagram.com/ofertaya" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="https://tiktok.com/@ofertaya" target="_blank" rel="noopener noreferrer">TikTok</a>
+            <a href="https://instagram.com/chapala.pe" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="https://tiktok.com/@chapala.pe" target="_blank" rel="noopener noreferrer">TikTok</a>
           </div>
         </footer>
       </main>
