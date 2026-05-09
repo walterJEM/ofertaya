@@ -14,17 +14,7 @@ La idea es simple: compramos productos en oferta (1 o 2 unidades de cada cosa) d
 
 ---
 
-## ¿Cómo funciona el modelo de negocio?
 
-1. Encuentras un producto en oferta (ej. algo que en Temu cuesta S/5)
-2. Lo publicas en Chapala.pe con un precio razonable (ej. S/18 con envío)
-3. El cliente lo ve, le llama la atención, y te escribe por WhatsApp
-4. Coordinas el pago por Yape / Plin / Efectivo
-5. Compras el producto y lo envías
-
-Stock mínimo — primero vendes, luego recompras si funciona.
-
----
 
 ## Stack tecnológico
 
@@ -55,7 +45,7 @@ chapala.pe/
 │   │   ├── useCart.js           ← lógica del carrito
 │   │   └── useCountdown.js      ← lógica del timer
 │   ├── data/
-│   │   └── products.js          ← ⭐ EDITA AQUÍ TUS PRODUCTOS
+│   │   └── products.js          ←  EDITA  PRODUCTOS
 │   ├── App.jsx                  ← componente principal
 │   └── index.css                ← variables CSS globales
 ├── public/
@@ -120,14 +110,7 @@ El mensaje se arma automáticamente con todos los productos del carrito.
 
 ---
 
-## Cómo publicar en internet (gratis)
 
-### Vercel — recomendado
-```bash
-npm install -g vercel
-vercel
-```
-En 2 minutos tienes tu tienda en línea con HTTPS incluido.
 
 ### Netlify
 ```bash
@@ -143,13 +126,13 @@ npm run build
 - [x] Oferta del día con countdown timer
 - [x] Carrito con checkout por WhatsApp
 - [x] Filtros por categoría / vibe
-- [ ] Fotos reales de productos
-- [ ] Dominio chapala.pe conectado
-- [ ] Pagos con Culqi (tarjetas)
-- [ ] Panel admin para agregar productos sin tocar código
-- [ ] Integración con Supabase para base de datos
-- [ ] Reseñas con fotos de clientes
-- [ ] Notificaciones por WhatsApp automáticas
+- [x] Fotos reales de productos
+- [x] Dominio chapala.pe conectado
+- [x] Pagos con Culqi (tarjetas)
+- [x] Panel admin para agregar productos sin tocar código
+- [x] Integración con Supabase para base de datos
+- [x] Reseñas con fotos de clientes
+- [x] Notificaciones por WhatsApp automáticas
 
 ---
 
@@ -165,11 +148,11 @@ El tráfico principal viene de redes sociales:
 
 ## Contacto
 
-- 📱 WhatsApp: +51 XXX XXX XXX
+- 📱 WhatsApp: +51 998429841
 - 📸 Instagram: [@chapala.pe](https://instagram.com/chapala.pe)
 - 🎵 TikTok: [@chapala.pe](https://tiktok.com/@chapala.pe)
 - 🌐 Web: [chapala.pe](https://chapala.pe)
 
 ---
 
-*Hecho con ❤️ en Lima, Perú 🇵🇪*
+
