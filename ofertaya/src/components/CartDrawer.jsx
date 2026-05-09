@@ -50,7 +50,7 @@ export default function CartDrawer({ items, total, onRemove, onClose }) {
               */}
               <a
                 className={styles.btnCheckout}
-                href={`https://wa.me/51999999999?text=${encodeURIComponent(
+                href={`https://wa.me/51998429841?text=${encodeURIComponent(
                   '¡Hola! Quiero comprar:\n' +
                   items.map(i => `- ${i.name} x${i.qty} (S/ ${i.price * i.qty})`).join('\n') +
                   `\n\nTotal: S/ ${total}`
