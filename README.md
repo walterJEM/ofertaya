@@ -1,4 +1,4 @@
-# OfertaYa 🔥
+# Chapala.pe 🔥
 
 Tienda de descubrimiento de ofertas. Scroll infinito, oferta del día, carrito y checkout por WhatsApp.
 
