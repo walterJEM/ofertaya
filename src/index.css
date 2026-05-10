@@ -1,0 +1,46 @@
+/* =====================
+   OFERTAYA — Global CSS
+   ===================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --brand:     #E63946;
+  --brand2:    #FF6B35;
+  --dark:      #1a1a2e;
+  --dark2:     #16213e;
+  --green:     #2ecc71;
+  --bg:        #f5f5f7;
+  --card:      #ffffff;
+  --text:      #1a1a1a;
+  --muted:     #777;
+  --border:    #e8e8e8;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+/* Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
