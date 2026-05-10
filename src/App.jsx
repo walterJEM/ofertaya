@@ -19,13 +19,12 @@ export default function App() {
 
   useEffect(() => {
     async function loadProducts() {
-      const { data } = await supabase
-        console.log('datos de supabase:', data)
+      const { data } = await supabase        
         .from('productos')
         .select('*')
         .eq('activo', true)
         .order('created_at', { ascending: false })
-
+      console.log('datos de supabase:', data)  
       if (data) {
         const feat = data.find(p => p.destacado)
         setFeatured(feat || data[0])
