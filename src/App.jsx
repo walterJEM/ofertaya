@@ -1,40 +1,52 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Header from './components/Header'
 import CountdownBar from './components/CountdownBar'
 import FeaturedDeal from './components/FeaturedDeal'
 import ProductCard from './components/ProductCard'
 import CartDrawer from './components/CartDrawer'
 import { useCart } from './hooks/useCart'
-import { FEATURED, PRODUCTS, CATEGORIES } from './data/products'
+import { CATEGORIES } from './data/products'
+import { supabase } from './supabase'
 import styles from './App.module.css'
 
 export default function App() {
   const { items, addItem, removeItem, total, count, toast } = useCart()
   const [cartOpen, setCartOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState('all')
+  const [products, setProducts] = useState([])
+  const [featured, setFeatured] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadProducts() {
+      const { data } = await supabase
+        .from('productos')
+        .select('*')
+        .eq('activo', true)
+        .order('created_at', { ascending: false })
+
+      if (data) {
+        const feat = data.find(p => p.destacado)
+        setFeatured(feat || data[0])
+        setProducts(data.filter(p => !p.destacado))
+      }
+      setLoading(false)
+    }
+    loadProducts()
+  }, [])
 
   const filtered = activeCategory === 'all'
-    ? PRODUCTS
-    : PRODUCTS.filter(p => p.cat.includes(activeCategory))
+    ? products
+    : products.filter(p => p.categoria?.includes(activeCategory))
+
+  if (loading) return <div style={{textAlign:'center',padding:'4rem',fontSize:'2rem'}}>⏳ Cargando...</div>
 
   return (
     <>
-      <Header
-        cartCount={count}
-        onCartClick={() => setCartOpen(true)}
-      />
-
+      <Header cartCount={count} onCartClick={() => setCartOpen(true)} />
       <CountdownBar />
-
       <main className={styles.main}>
-
-        {/* OFERTA ESTRELLA */}
-        <FeaturedDeal
-          product={FEATURED}
-          onAdd={addItem}
-        />
-
-        {/* FILTROS POR VIBE */}
+        {featured && <FeaturedDeal product={featured} onAdd={addItem} />}
         <section aria-label="Filtrar productos">
           <div className={styles.sectionHead}>
             <h2 className={styles.sectionTitle}>Explorar por vibe</h2>
@@ -51,24 +63,16 @@ export default function App() {
             ))}
           </div>
         </section>
-
-        {/* GRILLA DE PRODUCTOS */}
         <section aria-label="Productos en oferta">
           <div className={styles.grid}>
             {filtered.map(product => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAdd={addItem}
-              />
+              <ProductCard key={product.id} product={product} onAdd={addItem} />
             ))}
           </div>
           {filtered.length === 0 && (
-            <p className={styles.noResults}>No hay productos en esta categoría aún. 🛒</p>
+            <p className={styles.noResults}>No hay productos aún. 🛒</p>
           )}
         </section>
-
-        {/* BANNER CAJA SORPRESA */}
         <div className={styles.bannerSurprise} role="banner">
           <div>
             <h3 className={styles.bannerTitle}>Caja Sorpresa</h3>
@@ -76,8 +80,6 @@ export default function App() {
           </div>
           <span className={styles.bannerEmoji}>🎁</span>
         </div>
-
-        {/* FOOTER */}
         <footer className={styles.footer}>
           <p>© 2025 Chapala.pe · Lima, Perú</p>
           <div className={styles.footerLinks}>
@@ -87,18 +89,9 @@ export default function App() {
           </div>
         </footer>
       </main>
-
-      {/* CARRITO */}
       {cartOpen && (
-        <CartDrawer
-          items={items}
-          total={total}
-          onRemove={removeItem}
-          onClose={() => setCartOpen(false)}
-        />
+        <CartDrawer items={items} total={total} onRemove={removeItem} onClose={() => setCartOpen(false)} />
       )}
-
-      {/* TOAST NOTIFICACIÓN */}
       {toast && (
         <div className={styles.toast} role="status" aria-live="polite">
           {toast}
