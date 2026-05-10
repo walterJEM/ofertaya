@@ -8,7 +8,9 @@ const TAG_COLORS = {
 }
 
 export default function ProductCard({ product, onAdd }) {
-  const discount = Math.round((1 - product.price / product.was) * 100)
+  const price = product.price ?? product.precio
+  const was = product.was ?? product.precio_antes
+  const discount = was ? Math.round((1 - price / was) * 100) : 0
   const tagClass = TAG_COLORS[product.tag] || styles.tagDefault
 
   return (
