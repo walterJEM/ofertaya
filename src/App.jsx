@@ -20,6 +20,7 @@ export default function App() {
   useEffect(() => {
     async function loadProducts() {
       const { data } = await supabase
+        console.log('datos de supabase:', data)
         .from('productos')
         .select('*')
         .eq('activo', true)
