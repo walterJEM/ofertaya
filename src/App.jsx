@@ -28,7 +28,7 @@ export default function App() {
       if (data) {
         const feat = data.find(p => p.destacado)
         setFeatured(feat || data[0])
-        setProducts(data.filter(p => !p.destacado))
+        setProducts(data)
       }
       setLoading(false)
     }
