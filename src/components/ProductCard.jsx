@@ -24,10 +24,10 @@ export default function ProductCard({ product, onAdd }) {
       </div>
 
       <div className={styles.body}>
-        <p className={styles.name}>{product.name}</p>
+        <p className={styles.name}>{product.name ?? product.nombre}</p>
         <div className={styles.prices}>
-          <span className={styles.price}>S/ {product.price}</span>
-          <span className={styles.was}>S/ {product.was}</span>
+          <span className={styles.price}>S/ {price}</span>
+          <span className={styles.was}>S/ {was}</span>
           <span className={styles.save}>-{discount}%</span>
         </div>
         <button
