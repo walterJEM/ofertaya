@@ -20,7 +20,10 @@ export default function ProductCard({ product, onAdd }) {
           <span className={`${styles.tag} ${tagClass}`}>{product.tag}</span>
         )}
         {/* When using real image: <img src={product.imagen} alt={product.name} /> */}
-        <span className={styles.emoji}>{product.emoji}</span>
+        {product.imagen_url 
+          ? <img src={product.imagen_url} alt={product.nombre || product.name} style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:8}} />
+          : <span className={styles.emoji}>{product.emoji}</span>
+        }
       </div>
 
       <div className={styles.body}>
