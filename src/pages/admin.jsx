@@ -153,9 +153,23 @@ export default function Admin() {
             {fotosExtra.length > 0 && <p style={{fontSize:'0.85rem',color:'green',marginTop:4}}>✅ {fotosExtra.length} foto(s) seleccionada(s)</p>}
         </div>
         )}
-
-
-
+        <div style={{marginBottom:'0.75rem'}}>
+            <label style={{display:'block',marginBottom:4}}>🏷️ Categorías</label>
+            <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem'}}>
+                {['menos20','wao','regalo','hogar','tech'].map(cat => (
+                <label key={cat} style={{display:'flex',alignItems:'center',gap:4,background:'#eee',padding:'4px 10px',borderRadius:20,cursor:'pointer'}}>
+                    <input type="checkbox"
+                    checked={(form.categoria || []).includes(cat)}
+                    onChange={e => {
+                        const cats = form.categoria || []
+                        setForm({...form, categoria: e.target.checked ? [...cats, cat] : cats.filter(c => c !== cat)})
+                    }}
+                    />
+                    {cat}
+                </label>
+                ))}
+            </div>
+        </div>        
         <div style={{display:'flex',gap:'1rem',marginBottom:'0.75rem'}}>
           <label><input type="checkbox" checked={form.destacado} onChange={e => setForm({...form, destacado: e.target.checked})} /> Destacado</label>
           <label><input type="checkbox" checked={form.activo} onChange={e => setForm({...form, activo: e.target.checked})} /> Activo</label>
@@ -171,24 +185,7 @@ export default function Admin() {
               Cancelar
             </button>
           )}
-        </div>
-        <div style={{marginBottom:'0.75rem'}}>
-        <label style={{display:'block',marginBottom:4}}>🏷️ Categorías</label>
-        <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem'}}>
-            {['menos20','wao','regalo','hogar','tech'].map(cat => (
-            <label key={cat} style={{display:'flex',alignItems:'center',gap:4,background:'#eee',padding:'4px 10px',borderRadius:20,cursor:'pointer'}}>
-                <input type="checkbox"
-                checked={(form.categoria || []).includes(cat)}
-                onChange={e => {
-                    const cats = form.categoria || []
-                    setForm({...form, categoria: e.target.checked ? [...cats, cat] : cats.filter(c => c !== cat)})
-                }}
-                />
-                {cat}
-            </label>
-            ))}
-        </div>
-        </div>        
+        </div>     
         {msg && <p style={{marginTop:'0.5rem',color: msg.includes('✅') ? 'green' : 'red'}}>{msg}</p>}
       </form>
 
