@@ -11,6 +11,7 @@ export default function Admin() {
     nombre: '', descripcion: '', precio: '', precio_antes: '',
     emoji: '', tag: '', stock: '', activo: true, destacado: false
   })
+  const [foto, setFoto] = useState(null)
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('')
 
@@ -24,14 +25,33 @@ export default function Admin() {
   async function addProduct(e) {
     e.preventDefault()
     setLoading(true)
+    let imagen_url = ''
+
+    if (foto) {
+      const ext = foto.name.split('.').pop()
+      const fileName = `${Date.now()}.${ext}`
+      const { error: uploadError } = await supabase.storage
+        .from('productos')
+        .upload(fileName, foto)
+      if (uploadError) { setMsg('Error subiendo foto: ' + uploadError.message); setLoading(false); return }
+      const { data: urlData } = supabase.storage.from('productos').getPublicUrl(fileName)
+      imagen_url = urlData.publicUrl
+    }
+
     const { error } = await supabase.from('productos').insert([{
       ...form,
       precio: parseFloat(form.precio),
       precio_antes: parseFloat(form.precio_antes),
       stock: parseInt(form.stock) || 0,
+      imagen_url,
     }])
+
     if (error) setMsg('Error: ' + error.message)
-    else { setMsg('✅ Producto agregado!'); setForm({ nombre: '', descripcion: '', precio: '', precio_antes: '', emoji: '', tag: '', stock: '', activo: true, destacado: false }) }
+    else {
+      setMsg('✅ Producto agregado!')
+      setForm({ nombre: '', descripcion: '', precio: '', precio_antes: '', emoji: '', tag: '', stock: '', activo: true, destacado: false })
+      setFoto(null)
+    }
     setLoading(false)
     loadProducts()
   }
@@ -73,13 +93,19 @@ export default function Admin() {
               style={{width:'100%',padding:'0.5rem',borderRadius:6,border:'1px solid #ccc',fontSize:'1rem'}} />
           </div>
         ))}
+        <div style={{marginBottom:'0.75rem'}}>
+          <label style={{display:'block',marginBottom:4}}>📷 Foto del producto</label>
+          <input type="file" accept="image/*" onChange={e => setFoto(e.target.files[0])}
+            style={{width:'100%',padding:'0.5rem',borderRadius:6,border:'1px solid #ccc',fontSize:'1rem'}} />
+          {foto && <p style={{fontSize:'0.85rem',color:'green',marginTop:4}}>✅ {foto.name}</p>}
+        </div>
         <div style={{display:'flex',gap:'1rem',marginBottom:'0.75rem'}}>
-          <label><input type="checkbox" checked={form.destacado} onChange={e => setForm({...form, destacado: e.target.checked})} /> Destacado (oferta estrella)</label>
+          <label><input type="checkbox" checked={form.destacado} onChange={e => setForm({...form, destacado: e.target.checked})} /> Destacado</label>
           <label><input type="checkbox" checked={form.activo} onChange={e => setForm({...form, activo: e.target.checked})} /> Activo</label>
         </div>
         <button type="submit" disabled={loading}
           style={{padding:'0.75rem 2rem',background:'#6c63ff',color:'white',border:'none',borderRadius:8,fontSize:'1rem',cursor:'pointer'}}>
-          {loading ? 'Guardando...' : 'Agregar Producto'}
+          {loading ? 'Subiendo...' : 'Agregar Producto'}
         </button>
         {msg && <p style={{marginTop:'0.5rem',color: msg.includes('✅') ? 'green' : 'red'}}>{msg}</p>}
       </form>
@@ -87,11 +113,13 @@ export default function Admin() {
       <h3>📦 Productos ({products.length})</h3>
       {products.map(p => (
         <div key={p.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'1rem',background:p.activo?'white':'#eee',borderRadius:8,marginBottom:'0.5rem',border:'1px solid #ddd'}}>
-          <div>
-            <span style={{fontSize:'1.5rem'}}>{p.emoji}</span>
-            <strong style={{marginLeft:'0.5rem'}}>{p.nombre}</strong>
-            <span style={{marginLeft:'0.5rem',color:'#888'}}>S/ {p.precio}</span>
-            {p.destacado && <span style={{marginLeft:'0.5rem',background:'gold',padding:'2px 8px',borderRadius:4,fontSize:'0.75rem'}}>⭐ DESTACADO</span>}
+          <div style={{display:'flex',alignItems:'center',gap:'0.75rem'}}>
+            {p.imagen_url ? <img src={p.imagen_url} alt={p.nombre} style={{width:50,height:50,objectFit:'cover',borderRadius:6}} /> : <span style={{fontSize:'1.5rem'}}>{p.emoji}</span>}
+            <div>
+              <strong>{p.nombre}</strong>
+              <span style={{marginLeft:'0.5rem',color:'#888'}}>S/ {p.precio}</span>
+              {p.destacado && <span style={{marginLeft:'0.5rem',background:'gold',padding:'2px 8px',borderRadius:4,fontSize:'0.75rem'}}>⭐</span>}
+            </div>
           </div>
           <div style={{display:'flex',gap:'0.5rem'}}>
             <button onClick={() => toggleActive(p.id, p.activo)}
