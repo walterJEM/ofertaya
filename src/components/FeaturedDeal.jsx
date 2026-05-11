@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './FeaturedDeal.module.css'
 
 export default function FeaturedDeal({ product, onAdd }) {
@@ -11,14 +11,39 @@ export default function FeaturedDeal({ product, onAdd }) {
   const maxStock = product.stock_max || product.maxStock || 40
   const stockPct = Math.round((stock / maxStock) * 100)
 
+  const todasLasFotos = [
+    ...(product.imagen_url ? [{ url: product.imagen_url }] : []),
+    ...(product.fotos || []).sort((a, b) => a.orden - b.orden)
+  ]
+
+  const [current, setCurrent] = useState(0)
+
+  const prev = () => setCurrent(c => (c - 1 + todasLasFotos.length) % todasLasFotos.length)
+  const next = () => setCurrent(c => (c + 1) % todasLasFotos.length)
+
   return (
     <div className={styles.card}>
       <div className={styles.badge}>⚡ OFERTA DEL DÍA</div>
-      <div className={styles.imgArea}>
-        {product.imagen_url
-          ? <img src={product.imagen_url} alt={name} style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:12}} />
-          : <span className={styles.emoji}>{product.emoji}</span>
-        }
+      <div className={styles.imgArea} style={{position:'relative'}}>
+        {todasLasFotos.length > 0 ? (
+          <>
+            <img src={todasLasFotos[current]?.url} alt={name}
+              style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:12}} />
+            {todasLasFotos.length > 1 && (
+              <>
+                <button onClick={prev} style={{position:'absolute',left:8,top:'50%',transform:'translateY(-50%)',background:'rgba(0,0,0,0.5)',color:'white',border:'none',borderRadius:'50%',width:32,height:32,fontSize:'1.1rem',cursor:'pointer'}}>‹</button>
+                <button onClick={next} style={{position:'absolute',right:8,top:'50%',transform:'translateY(-50%)',background:'rgba(0,0,0,0.5)',color:'white',border:'none',borderRadius:'50%',width:32,height:32,fontSize:'1.1rem',cursor:'pointer'}}>›</button>
+                <div style={{position:'absolute',bottom:8,left:'50%',transform:'translateX(-50%)',display:'flex',gap:6}}>
+                  {todasLasFotos.map((_, i) => (
+                    <div key={i} onClick={() => setCurrent(i)} style={{width:8,height:8,borderRadius:'50%',background: i === current ? 'white' : 'rgba(255,255,255,0.5)',cursor:'pointer'}} />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <span className={styles.emoji}>{product.emoji}</span>
+        )}
       </div>
       <div className={styles.body}>
         <h2 className={styles.name}>{name}</h2>
