@@ -57,22 +57,7 @@ export default function Admin() {
       const ext = foto.name.split('.').pop()
       const fileName = `${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage.from('productos').upload(fileName, foto)
-      if (uploadError)
-         { setMsg('Error subiendo foto: ' + uploadError.message);
-            if (editId && fotosExtra.length > 0) {
-                for (const f of fotosExtra) {
-                    const ext = f.name.split('.').pop()
-                    const fileName = `${Date.now()}-${Math.random()}.${ext}`
-                    const { error: upErr } = await supabase.storage.from('productos').upload(fileName, f)
-                    if (!upErr) {
-                    const { data: urlData } = supabase.storage.from('productos').getPublicUrl(fileName)
-                    await supabase.from('producto_fotos').insert([{ producto_id: editId, url: urlData.publicUrl, orden: 0 }])
-                    }
-                }
-                setFotosExtra([])
-            }
-
-         setLoading(false); return }
+      if (uploadError) { setMsg('Error subiendo foto: ' + uploadError.message); setLoading(false); return }
       const { data: urlData } = supabase.storage.from('productos').getPublicUrl(fileName)
       imagen_url = urlData.publicUrl
     }
@@ -85,18 +70,33 @@ export default function Admin() {
     }
     if (imagen_url) payload.imagen_url = imagen_url
 
-    let error
+    let error, savedId = editId
     if (editId) {
       ({ error } = await supabase.from('productos').update(payload).eq('id', editId))
     } else {
-      ({ error } = await supabase.from('productos').insert([{ ...payload, imagen_url: imagen_url || '' }]))
+      const { data: newData, error: insertError } = await supabase.from('productos').insert([{ ...payload, imagen_url: imagen_url || '' }]).select()
+      error = insertError
+      if (newData && newData[0]) savedId = newData[0].id
     }
 
-    if (error) setMsg('Error: ' + error.message)
-    else {
-      setMsg(editId ? '✅ Producto actualizado!' : '✅ Producto agregado!')
-      cancelEdit()
+    if (error) { setMsg('Error: ' + error.message); setLoading(false); return }
+
+    // Subir fotos adicionales
+    if (fotosExtra.length > 0 && savedId) {
+      for (const f of fotosExtra) {
+        const ext = f.name.split('.').pop()
+        const fileName = `${Date.now()}-${Math.random()}.${ext}`
+        const { error: upErr } = await supabase.storage.from('productos').upload(fileName, f)
+        if (!upErr) {
+          const { data: urlData } = supabase.storage.from('productos').getPublicUrl(fileName)
+          await supabase.from('producto_fotos').insert([{ producto_id: savedId, url: urlData.publicUrl, orden: 0 }])
+        }
+      }
+      setFotosExtra([])
     }
+
+    setMsg(editId ? '✅ Producto actualizado!' : '✅ Producto agregado!')
+    cancelEdit()
     setLoading(false)
     loadProducts()
   }
