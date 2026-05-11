@@ -5,14 +5,17 @@ export function useCart() {
   const [toast, setToast] = useState(null)
 
   const addItem = useCallback((product) => {
+    const name = product.nombre || product.name || ''
+    const price = product.precio ?? product.price ?? 0
+
     setItems(prev => {
       const existing = prev.find(i => i.id === product.id)
       if (existing) {
         return prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i)
       }
-      return [...prev, { ...product, qty: 1 }]
+      return [...prev, { ...product, name, price, qty: 1 }]
     })
-    setToast(`✓ ${product.name} agregado — S/ ${product.price}`)
+    setToast(`✓ ${name} agregado — S/ ${price}`)
     setTimeout(() => setToast(null), 2500)
   }, [])
 
