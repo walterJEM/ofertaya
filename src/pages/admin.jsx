@@ -9,7 +9,7 @@ export default function Admin() {
   const [products, setProducts] = useState([])
   const [form, setForm] = useState({
     nombre: '', descripcion: '', precio: '', precio_antes: '',
-    emoji: '', tag: '', stock: '', activo: true, destacado: false
+    emoji: '', tag: '', stock: '', activo: true, destacado: false, categoria: []
   })
   const [editId, setEditId] = useState(null)
   const [foto, setFoto] = useState(null)
@@ -36,6 +36,7 @@ export default function Admin() {
       stock: p.stock || '',
       activo: p.activo,
       destacado: p.destacado,
+      categoria: p.categoria || [],
     })
     setMsg('')
     window.scrollTo(0, 0)
@@ -171,6 +172,23 @@ export default function Admin() {
             </button>
           )}
         </div>
+        <div style={{marginBottom:'0.75rem'}}>
+        <label style={{display:'block',marginBottom:4}}>🏷️ Categorías</label>
+        <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem'}}>
+            {['menos20','wao','regalo','hogar','tech'].map(cat => (
+            <label key={cat} style={{display:'flex',alignItems:'center',gap:4,background:'#eee',padding:'4px 10px',borderRadius:20,cursor:'pointer'}}>
+                <input type="checkbox"
+                checked={(form.categoria || []).includes(cat)}
+                onChange={e => {
+                    const cats = form.categoria || []
+                    setForm({...form, categoria: e.target.checked ? [...cats, cat] : cats.filter(c => c !== cat)})
+                }}
+                />
+                {cat}
+            </label>
+            ))}
+        </div>
+        </div>        
         {msg && <p style={{marginTop:'0.5rem',color: msg.includes('✅') ? 'green' : 'red'}}>{msg}</p>}
       </form>
 
