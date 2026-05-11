@@ -15,6 +15,7 @@ export default function Admin() {
   const [foto, setFoto] = useState(null)
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('')
+  const [fotosExtra, setFotosExtra] = useState([])
 
   useEffect(() => { if (auth) loadProducts() }, [auth])
 
@@ -56,7 +57,22 @@ export default function Admin() {
       const ext = foto.name.split('.').pop()
       const fileName = `${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage.from('productos').upload(fileName, foto)
-      if (uploadError) { setMsg('Error subiendo foto: ' + uploadError.message); setLoading(false); return }
+      if (uploadError)
+         { setMsg('Error subiendo foto: ' + uploadError.message);
+            if (editId && fotosExtra.length > 0) {
+                for (const f of fotosExtra) {
+                    const ext = f.name.split('.').pop()
+                    const fileName = `${Date.now()}-${Math.random()}.${ext}`
+                    const { error: upErr } = await supabase.storage.from('productos').upload(fileName, f)
+                    if (!upErr) {
+                    const { data: urlData } = supabase.storage.from('productos').getPublicUrl(fileName)
+                    await supabase.from('producto_fotos').insert([{ producto_id: editId, url: urlData.publicUrl, orden: 0 }])
+                    }
+                }
+                setFotosExtra([])
+            }
+
+         setLoading(false); return }
       const { data: urlData } = supabase.storage.from('productos').getPublicUrl(fileName)
       imagen_url = urlData.publicUrl
     }
@@ -128,6 +144,17 @@ export default function Admin() {
             style={{width:'100%',padding:'0.5rem',borderRadius:6,border:'1px solid #ccc',fontSize:'1rem'}} />
           {foto && <p style={{fontSize:'0.85rem',color:'green',marginTop:4}}>✅ {foto.name}</p>}
         </div>
+        {editId && (
+        <div style={{marginBottom:'0.75rem'}}>
+            <label style={{display:'block',marginBottom:4}}>📷 Fotos adicionales</label>
+            <input type="file" accept="image/*" multiple onChange={e => setFotosExtra(Array.from(e.target.files))}
+            style={{width:'100%',padding:'0.5rem',borderRadius:6,border:'1px solid #ccc',fontSize:'1rem'}} />
+            {fotosExtra.length > 0 && <p style={{fontSize:'0.85rem',color:'green',marginTop:4}}>✅ {fotosExtra.length} foto(s) seleccionada(s)</p>}
+        </div>
+        )}
+
+
+
         <div style={{display:'flex',gap:'1rem',marginBottom:'0.75rem'}}>
           <label><input type="checkbox" checked={form.destacado} onChange={e => setForm({...form, destacado: e.target.checked})} /> Destacado</label>
           <label><input type="checkbox" checked={form.activo} onChange={e => setForm({...form, activo: e.target.checked})} /> Activo</label>
