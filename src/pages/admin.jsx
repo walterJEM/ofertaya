@@ -11,6 +11,7 @@ export default function Admin() {
     nombre: '', descripcion: '', precio: '', precio_antes: '',
     emoji: '', tag: '', stock: '', activo: true, destacado: false
   })
+  const [editId, setEditId] = useState(null)
   const [foto, setFoto] = useState(null)
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('')
@@ -22,35 +23,63 @@ export default function Admin() {
     setProducts(data || [])
   }
 
-  async function addProduct(e) {
+  function startEdit(p) {
+    setEditId(p.id)
+    setForm({
+      nombre: p.nombre || '',
+      descripcion: p.descripcion || '',
+      precio: p.precio || '',
+      precio_antes: p.precio_antes || '',
+      emoji: p.emoji || '',
+      tag: p.tag || '',
+      stock: p.stock || '',
+      activo: p.activo,
+      destacado: p.destacado,
+    })
+    setMsg('')
+    window.scrollTo(0, 0)
+  }
+
+  function cancelEdit() {
+    setEditId(null)
+    setForm({ nombre: '', descripcion: '', precio: '', precio_antes: '', emoji: '', tag: '', stock: '', activo: true, destacado: false })
+    setFoto(null)
+    setMsg('')
+  }
+
+  async function saveProduct(e) {
     e.preventDefault()
     setLoading(true)
-    let imagen_url = ''
+    let imagen_url = undefined
 
     if (foto) {
       const ext = foto.name.split('.').pop()
       const fileName = `${Date.now()}.${ext}`
-      const { error: uploadError } = await supabase.storage
-        .from('productos')
-        .upload(fileName, foto)
+      const { error: uploadError } = await supabase.storage.from('productos').upload(fileName, foto)
       if (uploadError) { setMsg('Error subiendo foto: ' + uploadError.message); setLoading(false); return }
       const { data: urlData } = supabase.storage.from('productos').getPublicUrl(fileName)
       imagen_url = urlData.publicUrl
     }
 
-    const { error } = await supabase.from('productos').insert([{
+    const payload = {
       ...form,
       precio: parseFloat(form.precio),
       precio_antes: parseFloat(form.precio_antes),
       stock: parseInt(form.stock) || 0,
-      imagen_url,
-    }])
+    }
+    if (imagen_url) payload.imagen_url = imagen_url
+
+    let error
+    if (editId) {
+      ({ error } = await supabase.from('productos').update(payload).eq('id', editId))
+    } else {
+      ({ error } = await supabase.from('productos').insert([{ ...payload, imagen_url: imagen_url || '' }]))
+    }
 
     if (error) setMsg('Error: ' + error.message)
     else {
-      setMsg('✅ Producto agregado!')
-      setForm({ nombre: '', descripcion: '', precio: '', precio_antes: '', emoji: '', tag: '', stock: '', activo: true, destacado: false })
-      setFoto(null)
+      setMsg(editId ? '✅ Producto actualizado!' : '✅ Producto agregado!')
+      cancelEdit()
     }
     setLoading(false)
     loadProducts()
@@ -84,8 +113,8 @@ export default function Admin() {
     <div style={{maxWidth:800,margin:'2rem auto',padding:'1rem',fontFamily:'sans-serif'}}>
       <h2>🛠️ Panel Admin</h2>
 
-      <form onSubmit={addProduct} style={{background:'#f5f5f5',padding:'1.5rem',borderRadius:12,marginBottom:'2rem'}}>
-        <h3>➕ Agregar Producto</h3>
+      <form onSubmit={saveProduct} style={{background: editId ? '#fff3e0' : '#f5f5f5',padding:'1.5rem',borderRadius:12,marginBottom:'2rem',border: editId ? '2px solid #ff9800' : 'none'}}>
+        <h3>{editId ? '✏️ Editando Producto' : '➕ Agregar Producto'}</h3>
         {[['nombre','Nombre'],['descripcion','Descripción'],['emoji','Emoji'],['tag','Tag (HOT/NUEVO/WOW)'],['precio','Precio S/'],['precio_antes','Precio antes S/'],['stock','Stock']].map(([key, label]) => (
           <div key={key} style={{marginBottom:'0.75rem'}}>
             <label style={{display:'block',marginBottom:4}}>{label}</label>
@@ -103,10 +132,18 @@ export default function Admin() {
           <label><input type="checkbox" checked={form.destacado} onChange={e => setForm({...form, destacado: e.target.checked})} /> Destacado</label>
           <label><input type="checkbox" checked={form.activo} onChange={e => setForm({...form, activo: e.target.checked})} /> Activo</label>
         </div>
-        <button type="submit" disabled={loading}
-          style={{padding:'0.75rem 2rem',background:'#6c63ff',color:'white',border:'none',borderRadius:8,fontSize:'1rem',cursor:'pointer'}}>
-          {loading ? 'Subiendo...' : 'Agregar Producto'}
-        </button>
+        <div style={{display:'flex',gap:'0.75rem'}}>
+          <button type="submit" disabled={loading}
+            style={{padding:'0.75rem 2rem',background: editId ? '#ff9800' : '#6c63ff',color:'white',border:'none',borderRadius:8,fontSize:'1rem',cursor:'pointer'}}>
+            {loading ? 'Guardando...' : editId ? 'Actualizar' : 'Agregar Producto'}
+          </button>
+          {editId && (
+            <button type="button" onClick={cancelEdit}
+              style={{padding:'0.75rem 2rem',background:'#888',color:'white',border:'none',borderRadius:8,fontSize:'1rem',cursor:'pointer'}}>
+              Cancelar
+            </button>
+          )}
+        </div>
         {msg && <p style={{marginTop:'0.5rem',color: msg.includes('✅') ? 'green' : 'red'}}>{msg}</p>}
       </form>
 
@@ -122,6 +159,10 @@ export default function Admin() {
             </div>
           </div>
           <div style={{display:'flex',gap:'0.5rem'}}>
+            <button onClick={() => startEdit(p)}
+              style={{padding:'0.4rem 0.75rem',borderRadius:6,border:'none',cursor:'pointer',background:'#2196f3',color:'white'}}>
+              Editar
+            </button>
             <button onClick={() => toggleActive(p.id, p.activo)}
               style={{padding:'0.4rem 0.75rem',borderRadius:6,border:'none',cursor:'pointer',background: p.activo ? '#ff9800' : '#4caf50',color:'white'}}>
               {p.activo ? 'Ocultar' : 'Mostrar'}
