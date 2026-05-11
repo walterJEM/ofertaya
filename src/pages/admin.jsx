@@ -63,12 +63,12 @@ export default function Admin() {
     }
 
     const payload = {
-      ...form,
-      precio: parseFloat(form.precio),
-      precio_antes: parseFloat(form.precio_antes),
-      stock: parseInt(form.stock) || 0,
+    ...form,
+    precio: parseFloat(form.precio) || 0,
+    precio_antes: form.precio_antes ? parseFloat(form.precio_antes) : null,
+    stock: parseInt(form.stock) || 0,
     }
-    if (imagen_url) payload.imagen_url = imagen_url
+    if (imagen_url !== undefined) payload.imagen_url = imagen_url
 
     let error, savedId = editId
     if (editId) {
