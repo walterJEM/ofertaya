@@ -19,9 +19,9 @@ export default function App() {
 
   useEffect(() => {
     async function loadProducts() {
-      const { data } = await supabase        
+      const { data } = await supabase
         .from('productos')
-        .select('*')
+        .select('*, fotos:producto_fotos(url, orden)')
         .eq('activo', true)
         .order('created_at', { ascending: false })
       console.log('datos de supabase:', data)  
