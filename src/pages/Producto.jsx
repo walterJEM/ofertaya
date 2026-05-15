@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import ProductModal from '../components/ProductModal'
-import { useCart } from '../hooks/useCart'
+import { useCart } from '../context/CartContext'
 
 export default function Producto() {
   const { slug } = useParams()
