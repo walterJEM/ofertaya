@@ -34,19 +34,22 @@ export default function Producto() {
     </button>
   </div>
 
-  return (
-    <div>
-      <div style={{padding:'1rem',background:'#6c63ff'}}>
-        <button onClick={() => navigate('/')} style={{background:'none',border:'none',color:'white',cursor:'pointer',fontSize:'1rem'}}>
-          ← Volver a la tienda
-        </button>
-      </div>
-      <ProductModal
-        product={product}
-        onAdd={addItem}
-        onClose={() => navigate('/')}
-        inline={true}
-      />
-    </div>
-  )
+    return (
+        <div style={{minHeight:'100vh',background:'#f5f5f5'}}>
+        <div style={{padding:'1rem',background:'#6c63ff',display:'flex',alignItems:'center'}}>
+            <button onClick={() => navigate('/')} style={{background:'none',border:'none',color:'white',cursor:'pointer',fontSize:'1rem'}}>
+            ← Volver a la tienda
+            </button>
+            <span style={{color:'white',marginLeft:'1rem',fontWeight:'bold'}}>Chapala.pe</span>
+        </div>
+        <div style={{maxWidth:500,margin:'2rem auto',borderRadius:16,overflow:'hidden',boxShadow:'0 4px 20px rgba(0,0,0,0.1)'}}>
+            <ProductModal
+            product={product}
+            onAdd={addItem}
+            onClose={() => navigate('/')}
+            inline={true}
+            />
+        </div>
+        </div>
+    )
 }
