@@ -5,7 +5,7 @@ export default function ProductModal({ product, onClose, onAdd }) {
   const fotos = product.fotos?.length > 0 ? product.fotos : [{ url: product.imagen_url }]
 
   return (
-    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'1rem'}}>
+    <div onClick={inline ? undefined : onClose} style={{position: inline ? 'relative' : 'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'1rem'}}>
       <div onClick={e => e.stopPropagation()} style={{background:'white',borderRadius:16,maxWidth:500,width:'100%',maxHeight:'90vh',overflowY:'auto'}}>
         
         {/* Foto principal */}
