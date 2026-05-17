@@ -40,6 +40,19 @@ export default function ProductCard({ product, onAdd }) {
           >
             + Agregar
           </button>
+          <button
+            onClick={e => {
+              e.stopPropagation()
+              const slug = (product.nombre || product.name).toLowerCase().replace(/\s+/g, '-')
+              const url = `${window.location.origin}/producto/${slug}`
+              navigator.clipboard.writeText(url)
+              alert('¡Link copiado! 🔗')
+            }}
+            style={{marginTop:'0.5rem',width:'100%',padding:'0.4rem',background:'transparent',border:'1px solid #6c63ff',color:'#6c63ff',borderRadius:8,cursor:'pointer',fontSize:'0.85rem'}}
+          >
+            🔗 Compartir
+          </button>          
+
         </div>
       </article>
 
